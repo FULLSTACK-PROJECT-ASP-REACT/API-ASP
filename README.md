@@ -100,41 +100,52 @@ Este proyecto es un sistema completo para la gestión de productos y transaccion
 
 ## Evidencias
 
-### 1. Listado dinámico de productos y transacciones con paginación
-![Listado de productos con paginación](./screenshots/productos-listado.png)
-![Listado de transacciones con paginación](./screenshots/transacciones-listado.png)
+### 1. Documentación de la API con Swagger
+![Documentación API Swagger](https://res-console.cloudinary.com/dhkmjpq1h/thumbnails/v1/image/upload/v1748988107/Y2FwX2FwaV9taDJ5YmU=/drilldown)
 
-*Descripción: Muestra la tabla de productos y transacciones con controles de paginación, permitiendo navegar entre diferentes páginas de resultados.*
+*Descripción: Documentación completa de la API REST mostrando todos los endpoints disponibles para la gestión de productos y transacciones, con ejemplos de request/response y posibilidad de probar los endpoints directamente desde la interfaz de Swagger.*
 
-### 2. Pantalla para la creación de productos
-![Crear producto](./screenshots/producto-crear.png)
+### 2. Pantalla de Login
+![Pantalla de Login](https://res.cloudinary.com/dhkmjpq1h/image/upload/v1748988106/cap_2_wifsen.png)
 
-*Descripción: Formulario para crear nuevos productos con validación de campos y manejo de errores.*
+*Descripción: Interface de autenticación del sistema con campos para usuario y contraseña, incluyendo validaciones y manejo de errores de acceso.*
 
-### 3. Pantalla para la edición de productos
-![Editar producto](./screenshots/producto-editar.png)
+### 3. Dashboard Principal
+![Dashboard](https://res.cloudinary.com/dhkmjpq1h/image/upload/v1748988106/cap_3_yacoz7.png)
 
-*Descripción: Formulario precargado con los datos del producto seleccionado para su modificación.*
+*Descripción: Panel principal del sistema que muestra un resumen general con estadísticas, gráficos y accesos rápidos a las principales funcionalidades del sistema.*
 
-### 4. Pantalla para la creación de transacciones
-![Crear transacción](./screenshots/transaccion-crear.png)
+### 4. Gestión de Productos - Listado dinámico con paginación
+![Gestión de Productos](https://res.cloudinary.com/dhkmjpq1h/image/upload/v1748988106/cap_4_qlgsjx.png)
 
-*Descripción: Formulario para registrar nuevas transacciones con selección de productos y cálculos automáticos.*
+*Descripción: Pantalla principal de gestión de productos que incluye:*
+- *Listado dinámico de productos con paginación*
+- *Controles para crear, editar y eliminar productos*
+- *Funciones de búsqueda y filtrado*
+- *Visualización de información detallada de cada producto*
 
-### 5. Pantalla para la edición de transacciones
-![Editar transacción](./screenshots/transaccion-editar.png)
+### 5. Gestión de Transacciones - Listado dinámico con paginación
+![Gestión de Transacciones](https://res.cloudinary.com/dhkmjpq1h/image/upload/v1748988107/cap_8_pjmnw8.png)
 
-*Descripción: Formulario de edición de transacciones existentes con todos los campos modificables.*
+*Descripción: Pantalla de gestión de transacciones que incluye:*
+- *Listado dinámico de transacciones con paginación*
+- *Controles para crear, editar y eliminar transacciones*
+- *Filtros dinámicos para búsqueda avanzada*
+- *Visualización detallada de cada transacción con información del producto asociado*
 
-### 6. Pantalla de filtros dinámicos
-![Filtros dinámicos](./screenshots/filtros-dinamicos.png)
+### Funcionalidades Demostradas
 
-*Descripción: Interface de filtrado que permite buscar y filtrar productos y transacciones por diferentes criterios.*
+Las evidencias mostradas comprueban la implementación completa de:
 
-### 7. Pantalla para la consulta de información de un formulario (extra)
-![Consulta de información](./screenshots/consulta-informacion.png)
-
-*Descripción: Vista detallada que muestra información completa de un registro específico con todos sus campos y relaciones.*
+✅ **Listado dinámico de productos y transacciones con paginación**  
+✅ **Pantalla para la creación de productos**  
+✅ **Pantalla para la edición de productos**  
+✅ **Pantalla para la creación de transacciones**  
+✅ **Pantalla para la edición de transacciones**  
+✅ **Pantalla de filtros dinámicos**  
+✅ **Documentación completa de la API**  
+✅ **Sistema de autenticación**  
+✅ **Dashboard con información consolidada**
 
 ## Estructura del Proyecto
 
@@ -158,7 +169,7 @@ proyecto/
 │   │   ├── services/
 │   │   └── utils/
 │   └── public/
-└── screenshots/
+└── README.md
 ```
 
 ## Tecnologías Utilizadas
@@ -180,5 +191,8 @@ proyecto/
 
 - Asegúrese de que el backend esté ejecutándose antes de iniciar el frontend
 - Los puertos predeterminados son 44344 para el backend y 5173 para el frontend
+- La documentación completa de la API está disponible en Swagger UI
 - Para producción, considere configurar variables de entorno apropiadas y usar HTTPS
 - La base de datos se crea automáticamente al ejecutar las migraciones
+- El sistema incluye autenticación y autorización implementadas
+- Todas las operaciones CRUD están completamente funcionales con validaciones
