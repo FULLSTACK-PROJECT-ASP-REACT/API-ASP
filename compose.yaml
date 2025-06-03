@@ -1,0 +1,6 @@
+﻿services:
+  apinetcore:
+    image: apinetcore
+    build:
+      context: .
+      dockerfile: ApiNetCore/Dockerfile
