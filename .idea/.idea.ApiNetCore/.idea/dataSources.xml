@@ -9,5 +9,13 @@
       <jdbc-url>Server=156.244.32.23;User Id=sa;Password=Toyotaro@12;TrustServerCertificate=True;</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="MySQL" uuid="8bf9f6f6-ae3f-42a5-8220-991712cecf7f">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <configured-by-url>true</configured-by-url>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3306/db_geo?user=root&amp;password=</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>
