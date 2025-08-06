@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\matticry\\RiderProjects\\ApiNetCore\\ApiNetCore\\ApiNetCore.csproj": {}
+    "C:\\Users\\USUARIO\\RiderProjects\\API-ASP\\ApiNetCore\\ApiNetCore.csproj": {}
   },
   "projects": {
-    "C:\\Users\\matticry\\RiderProjects\\ApiNetCore\\ApiNetCore\\ApiNetCore.csproj": {
+    "C:\\Users\\USUARIO\\RiderProjects\\API-ASP\\ApiNetCore\\ApiNetCore.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\matticry\\RiderProjects\\ApiNetCore\\ApiNetCore\\ApiNetCore.csproj",
+        "projectUniqueName": "C:\\Users\\USUARIO\\RiderProjects\\API-ASP\\ApiNetCore\\ApiNetCore.csproj",
         "projectName": "ApiNetCore",
-        "projectPath": "C:\\Users\\matticry\\RiderProjects\\ApiNetCore\\ApiNetCore\\ApiNetCore.csproj",
-        "packagesPath": "C:\\Users\\matticry\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\matticry\\RiderProjects\\ApiNetCore\\ApiNetCore\\obj\\",
+        "projectPath": "C:\\Users\\USUARIO\\RiderProjects\\API-ASP\\ApiNetCore\\ApiNetCore.csproj",
+        "packagesPath": "C:\\Users\\USUARIO\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\USUARIO\\RiderProjects\\API-ASP\\ApiNetCore\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\matticry\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\USUARIO\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -26,6 +26,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -81,6 +82,10 @@
               "target": "Package",
               "version": "[8.0.16, )"
             },
+            "Pomelo.EntityFrameworkCore.MySql": {
+              "target": "Package",
+              "version": "[8.0.1, )"
+            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.6.2, )"
@@ -105,7 +110,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.406/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
