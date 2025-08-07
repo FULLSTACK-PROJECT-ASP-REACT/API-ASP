@@ -9,12 +9,17 @@
       <jdbc-url>Server=156.244.32.23;User Id=sa;Password=Toyotaro@12;TrustServerCertificate=True;</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="MySQL" uuid="8bf9f6f6-ae3f-42a5-8220-991712cecf7f">
+    <data-source source="LOCAL" name="db_geo@156.244.32.23" uuid="8bf9f6f6-ae3f-42a5-8220-991712cecf7f">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <configured-by-url>true</configured-by-url>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:3306/db_geo?user=root&amp;password=</jdbc-url>
+      <jdbc-url>jdbc:mysql://156.244.32.23:3306/db_geo?user=root&amp;password=Toyotaro@12</jdbc-url>
+      <jdbc-additional-properties>
+        <property name="com.intellij.clouds.kubernetes.db.host.port" />
+        <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
+        <property name="com.intellij.clouds.kubernetes.db.container.port" />
+      </jdbc-additional-properties>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>
