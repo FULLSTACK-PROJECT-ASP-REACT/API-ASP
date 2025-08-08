@@ -62,7 +62,7 @@ public class ApiResponse : ApiResponse<object>
         };
     }
 
-    public static new ApiResponse ErrorResponse(string message, string? errorCode = null)
+    public new static ApiResponse ErrorResponse(string message, string? errorCode = null)
     {
         return new ApiResponse
         {

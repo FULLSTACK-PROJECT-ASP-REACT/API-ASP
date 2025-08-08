@@ -34,7 +34,7 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 //DbContext MySql
 builder.Services.AddDbContext<MyDbContextMysql>(options =>
-    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
+    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnectionMysql"), ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnectionMysql"))));
 
 // Servicios
 

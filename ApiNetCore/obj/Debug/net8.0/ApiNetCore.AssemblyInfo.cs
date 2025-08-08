@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ApiNetCore")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5e7fd0b82663d1e331042d78947562acbe1e786f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b59168ac1e135e492fde75fbaa42fa2b0a3becc4")]
 [assembly: System.Reflection.AssemblyProductAttribute("ApiNetCore")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ApiNetCore")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
