@@ -2,6 +2,8 @@ using ApiNetCore.ContextMysql;
 using ApiNetCore.Controllers.Middleware;
 using DotNetEnv;
 using ApiNetCore.Mappings;
+using ApiNetCore.Services;
+using ApiNetCore.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 // Cargar variables de entorno
 Env.Load();
@@ -13,6 +15,11 @@ builder.Configuration.AddEnvironmentVariables();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+
+// Servicios
+builder.Services.AddScoped<IVendedorService, VendedorService>();
 
 
 //Cors
@@ -36,7 +43,6 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddDbContext<MyDbContextMysql>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnectionMysql"), ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnectionMysql"))));
 
-// Servicios
 
 
 
