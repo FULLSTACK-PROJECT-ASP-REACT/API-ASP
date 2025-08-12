@@ -21,6 +21,12 @@ public class VendedorService(MyDbContextMysql dbContextMysql, IMapper mapper) : 
     
         if (await dbContextMysql.TblGeocercaVendedors.AnyAsync(x => x.NombreVendedor == createVendedorDto.NombreVendedor))
             throw new ConflictException($"El nombre {createVendedorDto.NombreVendedor} ya existe en la base de datos");
+        
+        if (await dbContextMysql.TblGeocercaVendedors.AnyAsync(x => x.EmailVendedor == createVendedorDto.EmailVendedor))
+            throw new ConflictException($"El email {createVendedorDto.EmailVendedor} ya existe en la base de datos");
+        
+        if (await dbContextMysql.TblGeocercaVendedors.AnyAsync(x => x.TelefonoVendedor == createVendedorDto.TelefonoVendedor))
+            throw new ConflictException($"El telefono {createVendedorDto.TelefonoVendedor} ya existe en la base de datos");
     
         if (string.IsNullOrEmpty(createVendedorDto.CoordenadasVendedor) && 
             createVendedorDto is { LatitudVendedor: not null, LongitudVendedor: not null })
@@ -42,7 +48,7 @@ public class VendedorService(MyDbContextMysql dbContextMysql, IMapper mapper) : 
             }
         }
     
-        var newVendedor = mapper.Map<CreateVendedorDto, GeocercaVendedor>(createVendedorDto);
+        var newVendedor = mapper.Map<CreateVendedorDto, Vendedor>(createVendedorDto);
         await dbContextMysql.TblGeocercaVendedors.AddAsync(newVendedor);
         await dbContextMysql.SaveChangesAsync();
         return createVendedorDto;
@@ -61,12 +67,14 @@ public class VendedorService(MyDbContextMysql dbContextMysql, IMapper mapper) : 
                 throw new NotFoundException("No se encontraron vendedores en la base de datos");
 
             var vendedores = await dbContextMysql.TblGeocercaVendedors
-                .OrderBy(v => v.CodeVendedor) // Ordenar por código (o el campo que prefieras)
+                .Include(v => v.TblGeoVens)
+                .ThenInclude(gv => gv.IdGeocercaNavigation)
+                .OrderBy(v => v.CodeVendedor)
                 .Skip((pagina - 1) * tamanioPagina)
                 .Take(tamanioPagina)
                 .ToListAsync();
 
-            var vendedoresDto = mapper.Map<List<GeocercaVendedor>, List<VendedorDto>>(vendedores);
+            var vendedoresDto = mapper.Map<List<Vendedor>, List<VendedorDto>>(vendedores);
         
             var totalPaginas = (int)Math.Ceiling((double)totalVendedores / tamanioPagina);
         

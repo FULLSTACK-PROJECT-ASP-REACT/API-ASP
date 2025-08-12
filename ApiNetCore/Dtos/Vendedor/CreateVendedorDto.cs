@@ -9,5 +9,7 @@ public class CreateVendedorDto
     public decimal? LongitudVendedor { get; set; }
     public string? ColorUbi { get; set; }
     public string? DireccionVendedor { get; set; }
+    public string? TelefonoVendedor { get; set; }
+    public string? EmailVendedor { get; set; }
     
 }

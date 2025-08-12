@@ -1,8 +1,6 @@
-﻿using ApiNetCore.Dtos.Geocerca;
+﻿namespace ApiNetCore.Dtos.Vendedor;
 
-namespace ApiNetCore.Dtos.Vendedor;
-
-public class VendedorDto
+public class VendedorSinGeocercasDto
 {
     public int IdGV { get; set; }
     public string? CodeVendedor { get; set; }
@@ -15,7 +13,4 @@ public class VendedorDto
     public string? EstadoVendedor { get; set; }
     public string? EmailVendedor { get; set; }
     public string? TelefonoVendedor { get; set; }
-    public List<GeocercaDto> Geocercas { get; set; } = [];
-
-    
 }
