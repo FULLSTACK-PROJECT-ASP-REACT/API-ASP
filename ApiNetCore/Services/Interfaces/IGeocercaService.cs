@@ -1,15 +1,18 @@
 ﻿using ApiNetCore.Dtos.Geocerca;
-using ApiNetCore.Dtos.Vendedor.Listas;
+using ApiNetCore.Dtos.Paginacion;
 
 namespace ApiNetCore.Services.Interfaces;
 
 public interface IGeocercaService
 {
-    Task<CreateGeocercaDto> CreateGeocerca(CreateGeocercaDto createGeocercaDto);
-    Task<UpdateGeocercaDto> UpdateGeocerca(int idGeocerca, UpdateGeocercaDto updateGeocercaDto);
-    Task<bool> DeleteGeocerca(int idGeocerca);
-    Task<LGeocercaDto> GetGeocercasAsync(int pagina = 1, int tamanioPagina = 10);
-    Task<GeocercaConVendedorDto> GetGeocercaByIdAsync(int idGeocerca);
-    Task<CreateGeocercaVendedorDto> CreateGeocercaForVendedor(int idVendedor, CreateGeocercaVendedorDto createGeocercaVendedorDto);
+    Task<PaginatedResultDto<GeocercaListDto>> GetAllAsync(int pageNumber = 1, int pageSize = 10, string? searchTerm = null, string? estado = null, bool? activo = null);
+    Task<GeocercaDetailDto> GetByCodigoAsync(string codigo);
+    Task<GeocercaDetailDto> CreateAsync(GeocercaCreateDto createDto);
+    Task<GeocercaDetailDto> UpdateAsync(string codigo, GeocercaUpdateDto updateDto);
+    Task<bool> DeleteAsync(string codigo);
+    Task<bool> ExistsAsync(string codigo);
+    Task<bool> ToggleActiveAsync(string codigo, bool activo);
+
 
 }
+

@@ -21,8 +21,6 @@ builder.Services.AddSwaggerGen();
 
 
 // Servicios
-builder.Services.AddScoped<IVendedorService, VendedorService>();
-builder.Services.AddScoped<IGeocercaService, GeocercaService>();
 
 
 
