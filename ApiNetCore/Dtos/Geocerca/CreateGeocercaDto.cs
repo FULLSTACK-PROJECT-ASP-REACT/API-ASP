@@ -16,7 +16,6 @@ public class CreateGeocercaDto
     public decimal? PerimetroMetros { get; set; }
     public string? Estado { get; set; }
     public bool? Activa { get; set; }
-    public string? ColorMapa { get; set; }
     public int Prioridad { get; set; }
     public string? Descripcion { get; set; }
     public string TipoArea { get; set; } = null!;
