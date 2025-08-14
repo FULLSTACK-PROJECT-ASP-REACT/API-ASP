@@ -1,5 +1,7 @@
 ﻿using System.Text.Json;
 using ApiNetCore.Dtos.Geocerca;
+using ApiNetCore.Dtos.Geocerca.GeoUsu;
+using ApiNetCore.Dtos.Vendedor;
 using ApiNetCore.Models;
 using AutoMapper;
 
@@ -27,7 +29,13 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Geoceqcre, opt => opt.Ignore());
 
         // Mapeo de Model a ListDto
-        CreateMap<Geogeoc, GeocercaListDto>();
+        CreateMap<Geogeoc, GeocercaListDto>().ReverseMap();
+        CreateMap<Geogyu, VendedorListDto>().ReverseMap();
+        
+        // Mapeo de Geogeoc a GeocercaConVendedorDto
+        CreateMap<Geogeoc, GeocercaConVendedorDto>()
+            .ForMember(dest => dest.Geoccoor, opt => opt.MapFrom(src => ConvertJsonToObject(src.Geoccoor)))
+            .ForMember(dest => dest.Vendedores, opt => opt.MapFrom(src => src.Geogyus));
 
         // Mapeo de Model a DetailDto
         CreateMap<Geogeoc, GeocercaDetailDto>()

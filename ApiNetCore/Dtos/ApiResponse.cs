@@ -23,7 +23,8 @@ public class ApiResponse<T>
         {
             Success = true,
             Message = message,
-            Data = data
+            Data = data,
+            ErrorCode = "SUCCESS",
         };
     }
 

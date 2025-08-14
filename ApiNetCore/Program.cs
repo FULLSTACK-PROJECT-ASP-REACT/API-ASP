@@ -21,7 +21,7 @@ builder.Services.AddSwaggerGen();
 
 
 // Servicios
-
+builder.Services.AddScoped<IGeocercaService, GeocercaService>();
 
 
 //Cors

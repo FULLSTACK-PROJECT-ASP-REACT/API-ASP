@@ -32,7 +32,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Dtos\Vendedor\" />
       <Folder Include="Enum\" />
     </ItemGroup>
 

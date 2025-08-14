@@ -1,6 +1,8 @@
-﻿namespace ApiNetCore.Dtos.Geocerca;
+﻿using ApiNetCore.Dtos.Vendedor;
 
-public class GeocercaListDto
+namespace ApiNetCore.Dtos.Geocerca.GeoUsu;
+
+public class GeocercaConVendedorDto
 {
     public string Geoccod { get; set; } = null!;
     public string Geocnom { get; set; } = null!;
@@ -17,4 +19,9 @@ public class GeocercaListDto
     public bool? Geocact { get; set; }
     public int Geocpri { get; set; }
     public DateTime Geocfcre { get; set; }
+    
+    
+    public List<VendedorListDto> Vendedores  { get; set; } = [];
+    public int TotalVendedores => Vendedores ?.Count ?? 0;
+
 }
