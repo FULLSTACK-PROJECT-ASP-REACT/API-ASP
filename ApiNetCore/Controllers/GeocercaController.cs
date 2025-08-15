@@ -79,4 +79,28 @@ public class GeocercaController(IGeocercaService geocercaService) : ControllerBa
         }
         
     }
+    
+    [HttpPost("crear-con-vendedores")]
+    public async Task<ActionResult<ApiResponse<GeocercaConVendedoresCreateResponseDto>>> CreateGeocercaConVendedoresAsync([FromBody]GeocercaConVendedoresCreateDto createDto)
+    {
+        try
+        {
+            var stopwatch = Stopwatch.StartNew();
+            
+            var result = await geocercaService.CreateGeocercaConVendedoresAsync(createDto);
+            
+            stopwatch.Stop();
+            
+            var response = ApiResponse<GeocercaConVendedoresCreateResponseDto>.SuccessResponse(result, "La geocerca fue creada correctamente");
+            response.ResponseTimeMs = stopwatch.ElapsedMilliseconds;
+            
+            return Ok(response);
+        }
+        catch (Exception ex) when (ex is not BadRequestException)
+        {
+            throw new InternalServerException(ex.Message, ex);
+        }
+            
+    }
+
 }

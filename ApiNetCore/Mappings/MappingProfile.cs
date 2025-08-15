@@ -32,6 +32,25 @@ public class MappingProfile : Profile
         CreateMap<Geogeoc, GeocercaListDto>().ReverseMap();
         CreateMap<Geogyu, VendedorListDto>().ReverseMap();
         
+        
+        CreateMap<GeocercaConVendedoresCreateDto, Geogeoc>()
+            .ForMember(dest => dest.Geoccoor, opt => opt.MapFrom(src => ConvertObjectToJson(src.Geoccoor)))
+            .ForMember(dest => dest.Geocfcre, opt => opt.MapFrom(src => DateTime.Now))
+            .ForMember(dest => dest.Geocfedi, opt => opt.MapFrom(src => DateTime.Now))
+            .ForMember(dest => dest.Geocusedi, opt => opt.MapFrom(src => src.Geocuscre))
+            .ForMember(dest => dest.Geoceqedi, opt => opt.MapFrom(src => src.Geoceqcre))
+            .ForMember(dest => dest.Geogyus, opt => opt.Ignore()); // Los vendedores se manejan por separado
+
+        // Mapeo de VendedorCreateDto a Geogyu
+        CreateMap<VendedorCreateDto, Geogyu>()
+            .ForMember(dest => dest.Geugid, opt => opt.Ignore()) // Auto-generado
+            .ForMember(dest => dest.Geugidg, opt => opt.Ignore()) // Se asigna en el servicio
+            .ForMember(dest => dest.Geugfcre, opt => opt.MapFrom(src => DateTime.Now))
+            .ForMember(dest => dest.Geugfedi, opt => opt.MapFrom(src => DateTime.Now))
+            .ForMember(dest => dest.Geugusedi, opt => opt.MapFrom(src => src.Geuguscre))
+            .ForMember(dest => dest.Geugeqedi, opt => opt.MapFrom(src => src.Geugeqcre));
+        
+        
         // Mapeo de Geogeoc a GeocercaConVendedorDto
         CreateMap<Geogeoc, GeocercaConVendedorDto>()
             .ForMember(dest => dest.Geoccoor, opt => opt.MapFrom(src => ConvertJsonToObject(src.Geoccoor)))

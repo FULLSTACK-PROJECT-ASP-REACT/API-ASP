@@ -300,3 +300,4 @@ C:\Users\USUARIO\RiderProjects\API-ASP\ApiNetCore\obj\Debug\net8.0\ApiNetCore.ge
 C:\Users\USUARIO\RiderProjects\API-ASP\ApiNetCore\obj\Debug\net8.0\ref\ApiNetCore.dll
 C:\Users\USUARIO\RiderProjects\API-ASP\ApiNetCore\bin\Debug\net8.0\MySqlConnector.dll
 C:\Users\USUARIO\RiderProjects\API-ASP\ApiNetCore\bin\Debug\net8.0\Pomelo.EntityFrameworkCore.MySql.dll
+C:\Users\USUARIO\RiderProjects\API-ASP\ApiNetCore\bin\Debug\net8.0\Dtos\crear_geocercas.json

@@ -15,7 +15,7 @@ public class ValidationException : BaseException
     {
         Errors = new Dictionary<string, List<string>>
         {
-            { field, new List<string> { error } }
+            { field, [error] }
         };
     }
 }

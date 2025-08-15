@@ -1,6 +1,7 @@
 ﻿using ApiNetCore.Dtos.Geocerca;
 using ApiNetCore.Dtos.Geocerca.GeoUsu;
 using ApiNetCore.Dtos.Paginacion;
+using ApiNetCore.Dtos.Vendedor;
 
 namespace ApiNetCore.Services.Interfaces;
 
@@ -14,6 +15,11 @@ public interface IGeocercaService
     Task<bool> DeleteAsync(string codigo);
     Task<bool> ExistsAsync(string codigo);
     Task<bool> ToggleActiveAsync(string codigo, bool activo);
+    
+    Task<GeocercaConVendedoresCreateResponseDto> CreateGeocercaConVendedoresAsync(GeocercaConVendedoresCreateDto createDto);
+
+    Task<GeocercaConVendedoresCreateResponseDto> AgregarVendedoresAGeocercaAsync(string codigoGeocerca, List<VendedorCreateDto> vendedores);
+
 
 
 }
