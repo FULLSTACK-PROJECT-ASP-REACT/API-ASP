@@ -3,7 +3,6 @@ using ApiNetCore.Dtos;
 using ApiNetCore.Dtos.Geocerca;
 using ApiNetCore.Dtos.Geocerca.GeoUsu;
 using ApiNetCore.Dtos.Paginacion;
-using ApiNetCore.Dtos.Usuario;
 using ApiNetCore.Exceptions;
 using ApiNetCore.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -12,30 +11,9 @@ namespace ApiNetCore.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Produces("application/json")]
-public class GeocercaController(IGeocercaService geocercaService, IVendedorCoordenadasService vendedorCoordenadasService) : ControllerBase
+public class GeocercaController(IGeocercaService geocercaService) : ControllerBase
 {
     
-    [HttpPost("coordenadas-vendedores")]
-    public async Task<ActionResult<ApiResponse<List<VendedorCoordenadasDto>>>> GetListCoordenadasVendedorAsync([FromBody]GetListCoordenadasVendedorRequestDto request)
-    {
-        try
-        {
-            var stopwatch = Stopwatch.StartNew();
-            
-            var result = await vendedorCoordenadasService.GetListCoordenadasVendedorAsync(request);
-            
-            stopwatch.Stop();
-            
-            var response = ApiResponse<List<VendedorCoordenadasDto>>.SuccessResponse(result, "Los vendedores fueron obtenidos correctamente");
-            response.ResponseTimeMs = stopwatch.ElapsedMilliseconds;
-            
-            return Ok(response);
-        }
-        catch (Exception ex) when (ex is not BadRequestException)
-        {
-            throw new InternalServerException(ex.Message, ex);
-        }
-    }
     
     [HttpGet ("obtenerGeocercasAsync")]
     public async Task<ActionResult<ApiResponse<PaginatedResultDto<GeocercaListDto>>>> GetAsync(

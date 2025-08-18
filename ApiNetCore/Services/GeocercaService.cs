@@ -95,7 +95,7 @@ public class GeocercaService : IGeocercaService
             if (activo.HasValue) query = query.Where(g => g.Geocact == activo.Value);
 
             // Filtrar solo geocercas que tienen vendedores asignados
-            if (soloConVendedores) query = query.Where(g => g.Geogyus.Any());
+            if (soloConVendedores) query = query.Where(g => g.Geogyus.Count != 0);
 
             var totalItems = await query.CountAsync();
 
@@ -185,8 +185,7 @@ public class GeocercaService : IGeocercaService
         throw new NotImplementedException();
     }
 
-    public async Task<GeocercaConVendedoresCreateResponseDto> CreateGeocercaConVendedoresAsync(
-        GeocercaConVendedoresCreateDto createDto)
+    public async Task<GeocercaConVendedoresCreateResponseDto> CreateGeocercaConVendedoresAsync(GeocercaConVendedoresCreateDto createDto)
     {
         await using var transaction = await _dbContextMysql.Database.BeginTransactionAsync();
 

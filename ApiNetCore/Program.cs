@@ -18,16 +18,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Registrar HttpClient
-builder.Services.AddHttpClient<VendedorCoordenadasService>(client =>
-{
-    client.Timeout = TimeSpan.FromSeconds(30);
-    client.DefaultRequestHeaders.Add("User-Agent", "TuAplicacion/1.0");
-});
+
 
 // Servicios
 builder.Services.AddScoped<IGeocercaService, GeocercaService>();
-builder.Services.AddScoped<IVendedorCoordenadasService, VendedorCoordenadasService>();
 
 
 
