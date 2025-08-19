@@ -94,7 +94,6 @@ public class GeocercaService : IGeocercaService
 
             if (activo.HasValue) query = query.Where(g => g.Geocact == activo.Value);
 
-            // Filtrar solo geocercas que tienen vendedores asignados
             if (soloConVendedores) query = query.Where(g => g.Geogyus.Count != 0);
 
             var totalItems = await query.CountAsync();
