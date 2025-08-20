@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using ApiNetCore.Dtos;
 using ApiNetCore.Dtos.Geocerca;
 using ApiNetCore.Dtos.Geocerca.GeoUsu;
 using ApiNetCore.Dtos.Vendedor;
@@ -11,28 +12,35 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        // Mapeo de CreateDto a Model
-        CreateMap<GeocercaCreateDto, Geogeoc>()
-            .ForMember(dest => dest.Geoccoor, opt => opt.MapFrom(src => ConvertObjectToJson(src.Geoccoor)))
-            .ForMember(dest => dest.Geocfcre, opt => opt.MapFrom(src => DateTime.Now))
-            .ForMember(dest => dest.Geocfedi, opt => opt.MapFrom(src => DateTime.Now))
-            .ForMember(dest => dest.Geocusedi, opt => opt.MapFrom(src => src.Geocuscre))
-            .ForMember(dest => dest.Geoceqedi, opt => opt.MapFrom(src => src.Geoceqcre));
-
-        // Mapeo de UpdateDto a Model
+        // Mapear desde Geogyu + Geogeoc a GeocercaVendedorDto
+        CreateMap<Geogyu, GeocercaVendedorDto>()
+            .ForMember(dest => dest.Geoccod, opt => opt.MapFrom(src => src.GeugidgNavigation.Geoccod))
+            .ForMember(dest => dest.Geocnom, opt => opt.MapFrom(src => src.GeugidgNavigation.Geocnom))
+            .ForMember(dest => dest.Geocsec, opt => opt.MapFrom(src => src.GeugidgNavigation.Geocsec))
+            .ForMember(dest => dest.Geocciud, opt => opt.MapFrom(src => src.GeugidgNavigation.Geocciud))
+            .ForMember(dest => dest.Geocprov, opt => opt.MapFrom(src => src.GeugidgNavigation.Geocprov))
+            .ForMember(dest => dest.Geocest, opt => opt.MapFrom(src => src.GeugidgNavigation.Geocest))
+            .ForMember(dest => dest.Geocact, opt => opt.MapFrom(src => src.GeugidgNavigation.Geocact))
+            .ForMember(dest => dest.Geocpri, opt => opt.MapFrom(src => src.GeugidgNavigation.Geocpri))
+            .ForMember(dest => dest.Geoclat, opt => opt.MapFrom(src => src.GeugidgNavigation.Geoclat))
+            .ForMember(dest => dest.Geoclon, opt => opt.MapFrom(src => src.GeugidgNavigation.Geoclon))
+            .ForMember(dest => dest.Geoccoor, opt => opt.MapFrom(src => src.GeugidgNavigation.Geoccoor))
+            .ForMember(dest => dest.FechaAsignacion, opt => opt.MapFrom(src => src.Geugfcre));
+        
+        // Para actualización de geocerca
         CreateMap<GeocercaUpdateDto, Geogeoc>()
-            .ForMember(dest => dest.Geoccoor, opt => opt.MapFrom(src => ConvertObjectToJson(src.Geoccoor)))
-            .ForMember(dest => dest.Geocfedi, opt => opt.MapFrom(src => DateTime.Now))
-            .ForMember(dest => dest.Geoccod, opt => opt.Ignore())
-            .ForMember(dest => dest.Geocfcre, opt => opt.Ignore())
-            .ForMember(dest => dest.Geocuscre, opt => opt.Ignore())
-            .ForMember(dest => dest.Geoceqcre, opt => opt.Ignore());
+            .ForMember(dest => dest.Geoccod, opt => opt.Ignore()) // No se actualiza el código
+            .ForMember(dest => dest.Geocfcre, opt => opt.Ignore()) // No se actualiza fecha creación
+            .ForMember(dest => dest.Geocuscre, opt => opt.Ignore()) // No se actualiza usuario creación
+            .ForMember(dest => dest.Geoceqcre, opt => opt.Ignore()) // No se actualiza equipo creación
+            .ForMember(dest => dest.Geoccoor, opt => opt.MapFrom(src => ConvertObjectToJson(src.Geoccoor))) // Conversión de coordenadas
+            .ForMember(dest => dest.Geocfedi, opt => opt.MapFrom(src => DateTime.Now)) // Fecha edición automática
+            .ForMember(dest => dest.Geogyus, opt => opt.Ignore()); // No se tocan las relaciones
 
-        // Mapeo de Model a ListDto
-        CreateMap<Geogeoc, GeocercaListDto>().ReverseMap();
-        CreateMap<Geogyu, VendedorListDto>().ReverseMap();
+        CreateMap<Geogeoc, GeocercaListDto>();
+        CreateMap<Geogyu, VendedorListDto>();
         
-        
+        // Mapeo para crear geocerca con vendedores
         CreateMap<GeocercaConVendedoresCreateDto, Geogeoc>()
             .ForMember(dest => dest.Geoccoor, opt => opt.MapFrom(src => ConvertObjectToJson(src.Geoccoor)))
             .ForMember(dest => dest.Geocfcre, opt => opt.MapFrom(src => DateTime.Now))
@@ -50,17 +58,24 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Geugusedi, opt => opt.MapFrom(src => src.Geuguscre))
             .ForMember(dest => dest.Geugeqedi, opt => opt.MapFrom(src => src.Geugeqcre));
         
-        
         // Mapeo de Geogeoc a GeocercaConVendedorDto
         CreateMap<Geogeoc, GeocercaConVendedorDto>()
             .ForMember(dest => dest.Geoccoor, opt => opt.MapFrom(src => ConvertJsonToObject(src.Geoccoor)))
             .ForMember(dest => dest.Vendedores, opt => opt.MapFrom(src => src.Geogyus));
 
-        // Mapeo de Model a DetailDto
+        // Para obtener detalle de geocerca
         CreateMap<Geogeoc, GeocercaDetailDto>()
             .ForMember(dest => dest.Geoccoor, opt => opt.MapFrom(src => ConvertJsonToObject(src.Geoccoor)));
+
+        CreateMap<GeocercaDetailDto, GeocercaUpdateDto>()
+            .ForMember(dest => dest.Geoccoor, opt => opt.MapFrom(src => src.Geoccoor)) // Ya es object
+            .ForMember(dest => dest.Geocusedi, opt => opt.Ignore()) // Se debe establecer desde el contexto
+            .ForMember(dest => dest.Geoceqedi, opt => opt.Ignore()); // Se debe establecer desde el contexto
     }
 
+    /// <summary>
+    /// Convierte un objeto a JSON string para almacenar en BD
+    /// </summary>
     private static string? ConvertObjectToJson(object? coordinates)
     {
         if (coordinates == null)
@@ -76,6 +91,9 @@ public class MappingProfile : Profile
         }
     }
 
+    /// <summary>
+    /// Convierte un JSON string a objeto para usar en DTOs
+    /// </summary>
     private static object? ConvertJsonToObject(string? jsonCoordinates)
     {
         if (string.IsNullOrEmpty(jsonCoordinates))

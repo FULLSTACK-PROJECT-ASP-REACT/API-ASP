@@ -1,4 +1,5 @@
-﻿using ApiNetCore.Dtos.Geocerca;
+﻿using ApiNetCore.Dtos;
+using ApiNetCore.Dtos.Geocerca;
 using ApiNetCore.Dtos.Geocerca.GeoUsu;
 using ApiNetCore.Dtos.Paginacion;
 using ApiNetCore.Dtos.Vendedor;
@@ -13,6 +14,9 @@ public interface IGeocercaService
     Task<bool> ExistsAsync(string codigo);
     Task<GeocercaConVendedoresCreateResponseDto> CreateGeocercaConVendedoresAsync(GeocercaConVendedoresCreateDto createDto);
     
+    Task<GeocercaUpdateResponseDto> UpdateAsync(string codigo, GeocercaUpdateDto updateDto);
+    
+    public Task<PaginatedResultDto<VendedorConGeocercasDto>> GetVendedoresConGeocercasAsync(string token, int pageNumber = 1, int pageSize = 10, string? searchTerm = null, bool? activo = null, string? estado = null);
 
 
 }

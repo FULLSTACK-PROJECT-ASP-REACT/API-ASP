@@ -1,4 +1,5 @@
 ﻿using ApiNetCore.ContextMysql;
+using ApiNetCore.Dtos;
 using ApiNetCore.Dtos.Geocerca;
 using ApiNetCore.Dtos.Geocerca.GeoUsu;
 using ApiNetCore.Dtos.Paginacion;
@@ -15,11 +16,15 @@ public class GeocercaService : IGeocercaService
 {
     private MyDbContextMysql _dbContextMysql;
     private readonly IMapper _mapper;
+    private readonly IVendedorExternoService _vendedorExternoService;
 
-    public GeocercaService(MyDbContextMysql dbContextMysql, IMapper mapper)
+
+    public GeocercaService(MyDbContextMysql dbContextMysql, IMapper mapper,
+        IVendedorExternoService vendedorExternoService)
     {
         _dbContextMysql = dbContextMysql;
         _mapper = mapper;
+        _vendedorExternoService = vendedorExternoService;
     }
 
 
@@ -146,7 +151,7 @@ public class GeocercaService : IGeocercaService
             throw new InternalServerException($"Error al obtener la geocerca: {ex.Message}");
         }
     }
-    
+
     public async Task<bool> ExistsAsync(string codigo)
     {
         try
@@ -236,8 +241,169 @@ public class GeocercaService : IGeocercaService
         }
     }
 
+    public async Task<GeocercaUpdateResponseDto> UpdateAsync(string codigo, GeocercaUpdateDto updateDto)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(codigo))
+                throw new BadRequestException("El código de la geocerca es requerido");
 
-    private async Task<(List<string> VendedoresCreados, List<string> ErroresVendedores)> CrearVendedoresInternos(string codigoGeocerca, List<VendedorCreateDto> vendedores)
+            if (updateDto == null)
+                throw new BadRequestException("Los datos de la geocerca son requeridos");
+        
+            var geocercaEntity = await _dbContextMysql.Geogeocs
+                .FirstOrDefaultAsync(g => g.Geoccod == codigo);
+            
+            if (geocercaEntity == null)
+                throw new NotFoundException($"No se encontró una geocerca con el código: {codigo}");
+        
+            _mapper.Map(updateDto, geocercaEntity);
+        
+            _dbContextMysql.Update(geocercaEntity);
+            await _dbContextMysql.SaveChangesAsync();
+        
+            var geocercaDetalle = _mapper.Map<GeocercaDetailDto>(geocercaEntity);
+        
+            var response = new GeocercaUpdateResponseDto
+            {
+                Geoccod = geocercaDetalle.Geoccod,
+                Geocnom = geocercaDetalle.Geocnom,
+                FechaEdicion = geocercaDetalle.Geocfedi,
+                UsuarioEditor = geocercaDetalle.Geocusedi,
+                Mensaje = $"Geocerca '{geocercaDetalle.Geocnom}' actualizada exitosamente",
+                DetalleGeocerca = geocercaDetalle
+            };
+        
+            return response;
+        }
+        catch (Exception ex) when (ex is not (BadRequestException or NotFoundException))
+        {
+            throw new InternalServerException($"Error al actualizar geocerca: {ex.Message}");
+        }
+    }
+
+    public async Task<PaginatedResultDto<VendedorConGeocercasDto>> GetVendedoresConGeocercasAsync(
+        string token, int pageNumber = 1, int pageSize = 10, string? searchTerm = null,
+        bool? activo = null, string? estado = null)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(token))
+                throw new BadRequestException("Token de API externo es requerido");
+
+            if (pageNumber <= 0 || pageSize <= 0)
+                throw new BadRequestException("El número de página y el tamaño de página deben ser mayores a 0");
+
+            var vendedoresExternos = await _vendedorExternoService.GetVendedoresAsync(token);
+
+            if (vendedoresExternos.Count == 0)
+                return new PaginatedResultDto<VendedorConGeocercasDto>
+                {
+                    Data = [],
+                    Paginacion = new PaginacionDto
+                    {
+                        PaginaActual = pageNumber,
+                        TamanioPagina = pageSize,
+                        TotalRegistros = 0,
+                        TotalPaginas = 0
+                    }
+                };
+
+            var codigosVendedores = vendedoresExternos.Select(v => v.Usucod).ToList();
+
+            var queryGeogyus = _dbContextMysql.Geogyus
+                .Include(g => g.GeugidgNavigation)
+                .Where(g => codigosVendedores.Contains(g.Geugidv))
+                .AsQueryable();
+
+            if (activo.HasValue)
+                queryGeogyus = queryGeogyus.Where(g => g.GeugidgNavigation.Geocact == activo.Value);
+
+            if (!string.IsNullOrEmpty(estado))
+                queryGeogyus = queryGeogyus.Where(g => g.GeugidgNavigation.Geocest == estado);
+
+            var vendedoresConGeocercas = new List<VendedorConGeocercasDto>();
+
+            foreach (var vendedorExterno in vendedoresExternos)
+            {
+                var geocercasVendedor = await queryGeogyus
+                    .Where(g => g.Geugidv == vendedorExterno.Usucod)
+                    .Select(g => new GeocercaVendedorDto
+                    {
+                        Geoccod = g.GeugidgNavigation.Geoccod,
+                        Geocnom = g.GeugidgNavigation.Geocnom,
+                        Geocsec = g.GeugidgNavigation.Geocsec,
+                        Geocciud = g.GeugidgNavigation.Geocciud,
+                        Geocprov = g.GeugidgNavigation.Geocprov,
+                        Geocest = g.GeugidgNavigation.Geocest,
+                        Geocact = g.GeugidgNavigation.Geocact,
+                        Geocpri = g.GeugidgNavigation.Geocpri,
+                        Geoclat = g.GeugidgNavigation.Geoclat,
+                        Geoclon = g.GeugidgNavigation.Geoclon,
+                        Geoccoor = g.GeugidgNavigation.Geoccoor,
+                        FechaAsignacion = g.Geugfcre
+                    })
+                    .ToListAsync();
+
+                var vendedorConGeocercas = new VendedorConGeocercasDto
+                {
+                    CodigoVendedor = vendedorExterno.Usucod,
+                    NombreVendedor = vendedorExterno.Usunombre,
+                    EmailVendedor = vendedorExterno.Usuemail,
+                    CodigoVendedorSecundario = vendedorExterno.Usucodv,
+                    UbicacionActual = vendedorExterno.Ubicacion,
+                    Geocercas = geocercasVendedor,
+                    TotalGeocercas = geocercasVendedor.Count
+                };
+
+                vendedoresConGeocercas.Add(vendedorConGeocercas);
+            }
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                var searchTermLower = searchTerm.ToLower();
+                vendedoresConGeocercas = vendedoresConGeocercas
+                    .Where(v =>
+                        v.CodigoVendedor.ToLower().Contains(searchTermLower) ||
+                        v.NombreVendedor.ToLower().Contains(searchTermLower) ||
+                        v.EmailVendedor.ToLower().Contains(searchTermLower) ||
+                        v.Geocercas.Any(g =>
+                            g.Geocnom.ToLower().Contains(searchTermLower) ||
+                            g.Geocsec.ToLower().Contains(searchTermLower) ||
+                            g.Geocciud.ToLower().Contains(searchTermLower)))
+                    .ToList();
+            }
+
+            var totalItems = vendedoresConGeocercas.Count;
+            var vendedoresPaginados = vendedoresConGeocercas
+                .OrderBy(v => v.NombreVendedor)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var paginacion = new PaginacionDto
+            {
+                PaginaActual = pageNumber,
+                TamanioPagina = pageSize,
+                TotalRegistros = totalItems,
+                TotalPaginas = (int)Math.Ceiling((double)totalItems / pageSize)
+            };
+
+            return new PaginatedResultDto<VendedorConGeocercasDto>
+            {
+                Data = vendedoresPaginados,
+                Paginacion = paginacion
+            };
+        }
+        catch (Exception ex) when (ex is not BadRequestException)
+        {
+            throw new InternalServerException($"Error al obtener vendedores con geocercas: {ex.Message}");
+        }
+    }
+
+
+    private async Task<(List<string> VendedoresCreados, List<string> ErroresVendedores)> CrearVendedoresInternos(
+        string codigoGeocerca, List<VendedorCreateDto> vendedores)
     {
         var vendedoresCreados = new List<string>();
         var erroresVendedores = new List<string>();

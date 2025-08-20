@@ -22,6 +22,18 @@ builder.Services.AddSwaggerGen();
 
 // Servicios
 builder.Services.AddScoped<IGeocercaService, GeocercaService>();
+builder.Services.AddScoped<IVendedorExternoService, VendedorExternoService>();
+
+
+
+
+builder.Services.AddHttpClient<IVendedorExternoService, VendedorExternoService>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(30);
+    client.DefaultRequestHeaders.Add("User-Agent", "ApiNetCore/1.0");
+});
+
+
 
 
 
