@@ -146,22 +146,7 @@ public class GeocercaService : IGeocercaService
             throw new InternalServerException($"Error al obtener la geocerca: {ex.Message}");
         }
     }
-
-    public async Task<GeocercaDetailDto> CreateAsync(GeocercaCreateDto createDto)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<GeocercaDetailDto> UpdateAsync(string codigo, GeocercaUpdateDto updateDto)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<bool> DeleteAsync(string codigo)
-    {
-        throw new NotImplementedException();
-    }
-
+    
     public async Task<bool> ExistsAsync(string codigo)
     {
         try
@@ -179,12 +164,8 @@ public class GeocercaService : IGeocercaService
     }
 
 
-    public async Task<bool> ToggleActiveAsync(string codigo, bool activo)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<GeocercaConVendedoresCreateResponseDto> CreateGeocercaConVendedoresAsync(GeocercaConVendedoresCreateDto createDto)
+    public async Task<GeocercaConVendedoresCreateResponseDto> CreateGeocercaConVendedoresAsync(
+        GeocercaConVendedoresCreateDto createDto)
     {
         await using var transaction = await _dbContextMysql.Database.BeginTransactionAsync();
 
@@ -192,7 +173,7 @@ public class GeocercaService : IGeocercaService
         {
             if (createDto == null)
                 throw new BadRequestException("Los datos de la geocerca son requeridos");
-            
+
 
             var existeGeocerca = await ExistsAsync(createDto.Geoccod);
             if (existeGeocerca)
@@ -255,33 +236,6 @@ public class GeocercaService : IGeocercaService
         }
     }
 
-    public async Task<GeocercaConVendedoresCreateResponseDto> AgregarVendedoresAGeocercaAsync(string codigoGeocerca,
-        List<VendedorCreateDto> vendedores)
-    {
-        await using var transaction = await _dbContextMysql.Database.BeginTransactionAsync();
-
-        try
-        {
-            if (string.IsNullOrEmpty(codigoGeocerca))
-                throw new BadRequestException("El código de geocerca es requerido");
-
-            if (vendedores.Count == 0)
-                throw new BadRequestException("Se debe proporcionar al menos un vendedor");
-
-            var geocerca = await _dbContextMysql.Geogeocs
-                .FirstOrDefaultAsync(g => g.Geoccod == codigoGeocerca);
-
-            if (geocerca == null)
-                throw new NotFoundException($"No se encontró la geocerca con código: {codigoGeocerca}");
-        }
-        catch (Exception ex) when (ex is not (BadRequestException or NotFoundException))
-        {
-            await transaction.RollbackAsync();
-            throw new InternalServerException($"Error al agregar vendedores a la geocerca: {ex.Message}");
-        }
-
-        return null;
-    }
 
     private async Task<(List<string> VendedoresCreados, List<string> ErroresVendedores)> CrearVendedoresInternos(string codigoGeocerca, List<VendedorCreateDto> vendedores)
     {
@@ -299,7 +253,7 @@ public class GeocercaService : IGeocercaService
                     erroresVendedores.Add($"El vendedor {vendedorDto.Geugidv} ya está asignado a esta geocerca");
                     continue;
                 }
-                
+
                 var vendedor = _mapper.Map<Geogyu>(vendedorDto);
                 vendedor.Geugidg = codigoGeocerca;
 
