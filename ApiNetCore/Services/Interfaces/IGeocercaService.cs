@@ -16,6 +16,12 @@ public interface IGeocercaService
     
     Task<GeocercaUpdateResponseDto> UpdateAsync(string codigo, GeocercaUpdateDto updateDto);
     
+    Task<GeocercaUpdateResponseDto> DeleteAsync(string codigo);
+    
+    Task<GeocercaUpdateResponseDto> DesactivarAsync(string codigo);
+    
+    Task<GeocercaUpdateResponseDto> ActivarAsync(string codigo);
+    
     public Task<PaginatedResultDto<VendedorConGeocercasDto>> GetVendedoresConGeocercasAsync(string token, int pageNumber = 1, int pageSize = 10, string? searchTerm = null, bool? activo = null, string? estado = null);
 
 

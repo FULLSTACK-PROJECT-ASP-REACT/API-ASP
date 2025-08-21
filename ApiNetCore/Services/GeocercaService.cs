@@ -250,20 +250,20 @@ public class GeocercaService : IGeocercaService
 
             if (updateDto == null)
                 throw new BadRequestException("Los datos de la geocerca son requeridos");
-        
+
             var geocercaEntity = await _dbContextMysql.Geogeocs
                 .FirstOrDefaultAsync(g => g.Geoccod == codigo);
-            
+
             if (geocercaEntity == null)
                 throw new NotFoundException($"No se encontró una geocerca con el código: {codigo}");
-        
+
             _mapper.Map(updateDto, geocercaEntity);
-        
+
             _dbContextMysql.Update(geocercaEntity);
             await _dbContextMysql.SaveChangesAsync();
-        
+
             var geocercaDetalle = _mapper.Map<GeocercaDetailDto>(geocercaEntity);
-        
+
             var response = new GeocercaUpdateResponseDto
             {
                 Geoccod = geocercaDetalle.Geoccod,
@@ -273,7 +273,7 @@ public class GeocercaService : IGeocercaService
                 Mensaje = $"Geocerca '{geocercaDetalle.Geocnom}' actualizada exitosamente",
                 DetalleGeocerca = geocercaDetalle
             };
-        
+
             return response;
         }
         catch (Exception ex) when (ex is not (BadRequestException or NotFoundException))
@@ -281,6 +281,118 @@ public class GeocercaService : IGeocercaService
             throw new InternalServerException($"Error al actualizar geocerca: {ex.Message}");
         }
     }
+
+    public async Task<GeocercaUpdateResponseDto> DeleteAsync(string codigo)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(codigo))
+                throw new BadRequestException("El código de la geocerca es requerido");
+
+            var geocercaEntity = await _dbContextMysql.Geogeocs
+                .FirstOrDefaultAsync(g => g.Geoccod == codigo);
+
+            var geocercaVendedores = await _dbContextMysql.Geogyus
+                .Where(v => v.Geugidg == codigo)
+                .ToListAsync();
+
+            foreach (var geocercaVendedor in geocercaVendedores)
+                _dbContextMysql.Remove(geocercaVendedor);
+
+            if (geocercaEntity == null)
+                throw new NotFoundException($"No se encontró una geocerca con el código: {codigo}");
+
+            _dbContextMysql.Remove(geocercaEntity);
+            await _dbContextMysql.SaveChangesAsync();
+        }
+        catch (Exception ex) when (ex is not (BadRequestException or NotFoundException))
+        {
+            throw new InternalServerException($"Error al eliminar geocerca: {ex.Message}");
+        }
+
+        return new GeocercaUpdateResponseDto
+        {
+            Geoccod = codigo,
+            Mensaje = $"Geocerca '{codigo}' eliminada exitosamente"
+        };
+    }
+
+    public async Task<GeocercaUpdateResponseDto> DesactivarAsync(string codigo)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(codigo))
+                throw new BadRequestException("El código de la geocerca es requerido");
+            
+            
+            var geocercaEntity = await _dbContextMysql.Geogeocs
+                .FirstOrDefaultAsync(g => g.Geoccod == codigo);
+            
+            
+            if (geocercaEntity == null)
+                throw new NotFoundException($"No se encontró una geocerca con el código: {codigo}");
+            
+            if (geocercaEntity.Geocest == "I")
+                throw new BadRequestException($"La geocerca '{geocercaEntity.Geocnom}' ya se encuentra desactivada");
+            
+            
+            geocercaEntity.Geocact = false;
+            geocercaEntity.Geocfedi = DateTime.Now;
+            geocercaEntity.Geocest = "I";
+            _dbContextMysql.Update(geocercaEntity);
+            await _dbContextMysql.SaveChangesAsync();
+            return new GeocercaUpdateResponseDto
+            {
+                Geoccod = geocercaEntity.Geoccod,
+                Geocnom = geocercaEntity.Geocnom,
+                FechaEdicion = geocercaEntity.Geocfedi,
+                UsuarioEditor = geocercaEntity.Geocusedi,
+                Mensaje = $"Geocerca '{geocercaEntity.Geocnom}' desactivada exitosamente"
+            };
+        }
+        catch (Exception ex) when (ex is not (BadRequestException or NotFoundException))
+        {
+            throw new InternalServerException($"Error al desactivar geocerca: {ex.Message}");
+        }
+    }
+
+    public async Task<GeocercaUpdateResponseDto> ActivarAsync(string codigo)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(codigo))
+                throw new BadRequestException("El código de la geocerca es requerido");
+            
+            var geocercaEntity = await _dbContextMysql.Geogeocs
+                .FirstOrDefaultAsync(g => g.Geoccod == codigo);
+            
+            if (geocercaEntity == null)
+                throw new NotFoundException($"No se encontró una geocerca con el código: {codigo}");
+            
+            
+            if (geocercaEntity.Geocest == "A")
+                throw new BadRequestException($"La geocerca '{geocercaEntity.Geocnom}' ya se encuentra activa");
+            
+            geocercaEntity.Geocact = true;
+            geocercaEntity.Geocfedi = DateTime.Now;
+            geocercaEntity.Geocest = "A";
+            _dbContextMysql.Update(geocercaEntity);
+            await _dbContextMysql.SaveChangesAsync();
+            return new GeocercaUpdateResponseDto
+            {
+                Geoccod = geocercaEntity.Geoccod,
+                Geocnom = geocercaEntity.Geocnom,
+                FechaEdicion = geocercaEntity.Geocfedi,
+                UsuarioEditor = geocercaEntity.Geocusedi,
+                Mensaje = $"Geocerca '{geocercaEntity.Geocnom}' desactivada exitosamente"
+            };
+        }
+        catch (Exception ex) when (ex is not (BadRequestException or NotFoundException))
+        {
+            throw new InternalServerException($"Error al desactivar geocerca: {ex.Message}");
+        }    
+    }
+
 
     public async Task<PaginatedResultDto<VendedorConGeocercasDto>> GetVendedoresConGeocercasAsync(
         string token, int pageNumber = 1, int pageSize = 10, string? searchTerm = null,

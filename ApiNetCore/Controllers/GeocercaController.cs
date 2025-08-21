@@ -15,6 +15,87 @@ namespace ApiNetCore.Controllers;
 public class GeocercaController(IGeocercaService geocercaService) : ControllerBase
 {
     
+    [HttpDelete ("eliminar-geocerca/{codigo}")]
+    public async Task<ActionResult<ApiResponse<GeocercaUpdateResponseDto>>> DeleteAsync(string codigo)
+    {
+        try
+        {
+            var stopwatch = Stopwatch.StartNew();
+            var result = await geocercaService.DeleteAsync(codigo);
+            stopwatch.Stop();
+        
+            var response = ApiResponse<GeocercaUpdateResponseDto>.SuccessResponse(result, "La geocerca fue eliminada correctamente");
+            response.ResponseTimeMs = stopwatch.ElapsedMilliseconds;
+            return Ok(response);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (BadRequestException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (InternalServerException ex)
+        {
+            return StatusCode(500, new { message = ex.Message });
+        }
+    }
+    
+    [HttpPatch ("activar-geocerca/{codigo}")]
+    public async Task<ActionResult<ApiResponse<GeocercaUpdateResponseDto>>> ActivarAsync(string codigo)
+    {
+        try
+        {
+            var stopwatch = Stopwatch.StartNew();
+            var result = await geocercaService.ActivarAsync(codigo);
+            stopwatch.Stop();
+        
+            var response = ApiResponse<GeocercaUpdateResponseDto>.SuccessResponse(result, "La geocerca fue activada correctamente");
+            response.ResponseTimeMs = stopwatch.ElapsedMilliseconds;
+            return Ok(response);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (BadRequestException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (InternalServerException ex)
+        {
+            return StatusCode(500, new { message = ex.Message });
+        }
+    }
+    
+    [HttpPatch ("desactivar-geocerca/{codigo}")]
+    public async Task<ActionResult<ApiResponse<GeocercaUpdateResponseDto>>> DesactivarAsync(string codigo)
+    {
+        try
+        {
+            var stopwatch = Stopwatch.StartNew();
+            var result = await geocercaService.DesactivarAsync(codigo);
+            stopwatch.Stop();
+        
+            var response = ApiResponse<GeocercaUpdateResponseDto>.SuccessResponse(result, "La geocerca fue desactivada correctamente");
+            response.ResponseTimeMs = stopwatch.ElapsedMilliseconds;
+            return Ok(response);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (BadRequestException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (InternalServerException ex)
+        {
+            return StatusCode(500, new { message = ex.Message });
+        }
+    }
+    
     [HttpPut("actualizar-geocerca/{codigo}")]
     public async Task<ActionResult<ApiResponse<GeocercaUpdateResponseDto>>> UpdateAsync(string codigo, GeocercaUpdateDto geocercaUpdateDto)
     {
