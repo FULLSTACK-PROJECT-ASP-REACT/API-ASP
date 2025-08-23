@@ -1,0 +1,35 @@
+﻿{
+  "geoccod": "G0002",
+  "geocnom": "Geocerca Zona Norte",
+  "geocsec": "Sector Comercial 1",
+  "geocdirre": "Av. Principal y Calle 10",
+  "geocciud": "Quito",
+  "geocprov": "Pichincha",
+  "geocpais": "Ecuador",
+  "geoclat": -0.180653,
+  "geoclon": -78.467834,
+  "geoccoor": [
+    {"lat": -0.180653, "lng": -78.467838},
+    {"lat": -0.181653, "lng": -78.468838},
+    {"lat": -0.182653, "lng": -78.469838},
+    {"lat": -0.180653, "lng": -78.467838}
+  ],
+  "geocarm": 1, 
+  "geocperm": 0, 
+  "geocest": "A",
+  "geocact": true,
+  "geocpri": 1, 
+  "geocdesc": "Geocerca que cubre el sector norte de la ciudad",
+  "geocuscre": "admin", 
+  "geoceqcre": "PC-ADMIN", 
+  "vendedores": [
+    {
+      "geugidv": "VEN001",
+      "geuglat": -0.181200,
+      "geuglon": -78.468500,
+      "geuguscre": "admin", 
+      "geugeqcre": "PC-ADMIN" 
+    }
+  ],
+  "validarVendedoresDuplicados": true
+}

@@ -28,17 +28,9 @@ public class GeocercaController(IGeocercaService geocercaService) : ControllerBa
             response.ResponseTimeMs = stopwatch.ElapsedMilliseconds;
             return Ok(response);
         }
-        catch (NotFoundException ex)
+        catch (Exception ex) when (ex is not BadRequestException)
         {
-            return NotFound(new { message = ex.Message });
-        }
-        catch (BadRequestException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (InternalServerException ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
+            throw new InternalServerException(ex.Message, ex);
         }
     }
     
@@ -55,17 +47,9 @@ public class GeocercaController(IGeocercaService geocercaService) : ControllerBa
             response.ResponseTimeMs = stopwatch.ElapsedMilliseconds;
             return Ok(response);
         }
-        catch (NotFoundException ex)
+        catch (Exception ex) when (ex is not BadRequestException)
         {
-            return NotFound(new { message = ex.Message });
-        }
-        catch (BadRequestException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (InternalServerException ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
+            throw new InternalServerException(ex.Message, ex);
         }
     }
     
@@ -82,17 +66,9 @@ public class GeocercaController(IGeocercaService geocercaService) : ControllerBa
             response.ResponseTimeMs = stopwatch.ElapsedMilliseconds;
             return Ok(response);
         }
-        catch (NotFoundException ex)
+        catch (Exception ex) when (ex is not BadRequestException)
         {
-            return NotFound(new { message = ex.Message });
-        }
-        catch (BadRequestException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (InternalServerException ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
+            throw new InternalServerException(ex.Message, ex);
         }
     }
     
@@ -109,17 +85,9 @@ public class GeocercaController(IGeocercaService geocercaService) : ControllerBa
             response.ResponseTimeMs = stopwatch.ElapsedMilliseconds;
             return Ok(response);
         }
-        catch (NotFoundException ex)
+        catch (Exception ex) when (ex is not BadRequestException)
         {
-            return NotFound(new { message = ex.Message });
-        }
-        catch (BadRequestException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (InternalServerException ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
+            throw new InternalServerException(ex.Message, ex);
         }
     }
     [HttpGet("vendedores-con-geocercas")]
@@ -146,13 +114,9 @@ public class GeocercaController(IGeocercaService geocercaService) : ControllerBa
 
             return Ok(result);
         }
-        catch (BadRequestException ex)
+        catch (Exception ex) when (ex is not BadRequestException)
         {
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (InternalServerException ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
+            throw new InternalServerException(ex.Message, ex);
         }
     }
 
