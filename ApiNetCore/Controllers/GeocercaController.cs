@@ -43,7 +43,7 @@ public class GeocercaController(IGeocercaService geocercaService) : ControllerBa
             var result = await geocercaService.ActivarAsync(codigo);
             stopwatch.Stop();
         
-            var response = ApiResponse<GeocercaUpdateResponseDto>.SuccessResponse(result, "La geocerca fue activada correctamente");
+            var response = ApiResponse<GeocercaUpdateResponseDto>.SuccessResponse(result, "La geocerca fue activada correctamente.");
             response.ResponseTimeMs = stopwatch.ElapsedMilliseconds;
             return Ok(response);
         }
