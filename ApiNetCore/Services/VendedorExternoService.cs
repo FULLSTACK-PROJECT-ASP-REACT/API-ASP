@@ -64,7 +64,7 @@ public class VendedorExternoService : IVendedorExternoService
             _logger.LogInformation("API externo consultado exitosamente. Vendedores obtenidos: {Count}",
                 vendedores?.Count ?? 0);
 
-            return vendedores ?? new List<VendedorExternoDto>();
+            return vendedores ?? [];
         }
         catch (HttpRequestException ex)
         {

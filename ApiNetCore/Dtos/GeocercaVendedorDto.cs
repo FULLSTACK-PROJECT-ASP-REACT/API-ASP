@@ -12,6 +12,11 @@ public class GeocercaVendedorDto
     public int Geocpri { get; set; }
     public decimal Geoclat { get; set; }
     public decimal Geoclon { get; set; }
+    
+    public decimal Geocarm { get; set; }
+
+    public decimal Geocperm { get; set; }
+
     public object? Geoccoor { get; set; }
     public DateTime FechaAsignacion { get; set; }
 }

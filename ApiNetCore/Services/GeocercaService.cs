@@ -14,7 +14,7 @@ namespace ApiNetCore.Services;
 
 public class GeocercaService : IGeocercaService
 {
-    private MyDbContextMysql _dbContextMysql;
+    private readonly MyDbContextMysql _dbContextMysql;
     private readonly IMapper _mapper;
     private readonly IVendedorExternoService _vendedorExternoService;
 
@@ -87,6 +87,7 @@ public class GeocercaService : IGeocercaService
                 throw new BadRequestException("El número de página y el tamaño de página deben ser mayores a 0");
 
             var query = _dbContextMysql.Geogeocs.Include(g => g.Geogyus).AsQueryable();
+            
             // Aplicar filtros
             if (!string.IsNullOrEmpty(searchTerm))
                 query = query.Where(g =>
@@ -452,6 +453,8 @@ public class GeocercaService : IGeocercaService
                         Geocpri = g.GeugidgNavigation.Geocpri,
                         Geoclat = g.GeugidgNavigation.Geoclat,
                         Geoclon = g.GeugidgNavigation.Geoclon,
+                        Geocarm = g.GeugidgNavigation.Geocarm,
+                        Geocperm = g.GeugidgNavigation.Geocperm,
                         Geoccoor = g.GeugidgNavigation.Geoccoor,
                         FechaAsignacion = g.Geugfcre
                     })
@@ -476,13 +479,13 @@ public class GeocercaService : IGeocercaService
                 var searchTermLower = searchTerm.ToLower();
                 vendedoresConGeocercas = vendedoresConGeocercas
                     .Where(v =>
-                        v.CodigoVendedor.ToLower().Contains(searchTermLower) ||
-                        v.NombreVendedor.ToLower().Contains(searchTermLower) ||
-                        v.EmailVendedor.ToLower().Contains(searchTermLower) ||
+                        v.CodigoVendedor.Contains(searchTermLower, StringComparison.CurrentCultureIgnoreCase) ||
+                        v.NombreVendedor.Contains(searchTermLower, StringComparison.CurrentCultureIgnoreCase) ||
+                        v.EmailVendedor.Contains(searchTermLower, StringComparison.CurrentCultureIgnoreCase) ||
                         v.Geocercas.Any(g =>
-                            g.Geocnom.ToLower().Contains(searchTermLower) ||
-                            g.Geocsec.ToLower().Contains(searchTermLower) ||
-                            g.Geocciud.ToLower().Contains(searchTermLower)))
+                            g.Geocnom.Contains(searchTermLower, StringComparison.CurrentCultureIgnoreCase) ||
+                            g.Geocsec.Contains(searchTermLower, StringComparison.CurrentCultureIgnoreCase) ||
+                            g.Geocciud.Contains(searchTermLower, StringComparison.CurrentCultureIgnoreCase)))
                     .ToList();
             }
 
