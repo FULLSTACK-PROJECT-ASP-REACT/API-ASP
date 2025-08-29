@@ -3,6 +3,7 @@ using ApiNetCore.Dtos;
 using ApiNetCore.Dtos.Geocerca;
 using ApiNetCore.Dtos.Geocerca.GeoUsu;
 using ApiNetCore.Dtos.Paginacion;
+using ApiNetCore.Dtos.Vendedor;
 using ApiNetCore.Exceptions;
 using ApiNetCore.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -119,6 +120,34 @@ public class GeocercaController(IGeocercaService geocercaService) : ControllerBa
             throw new InternalServerException(ex.Message, ex);
         }
     }
+    
+    [HttpGet("getListGeofenceByEnterprise/{enterpriseName}")]
+    public async Task<ActionResult<ApiResponse<PaginatedResultDto<GeocercaListDto>>>> GetListGeofenceByEnterpriseAsync(
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] bool? activo = null)
+    {
+        try
+        {
+            var stopwatch = Stopwatch.StartNew();
+            if (pageSize > 100) throw new BadRequestException("El tamaño de la página no puede ser mayor a 100");
+
+            var result = await geocercaService.GetListGeofenceByEnterpriseAsync(pageNumber, pageSize, activo);
+
+            stopwatch.Stop();
+
+            var response =
+                ApiResponse<PaginatedResultDto<GeocercaListDto>>.SuccessResponse(result,
+                    "Las geocercas fueron obtenidas correctamente");
+            response.ResponseTimeMs = stopwatch.ElapsedMilliseconds;
+
+            return Ok(response);
+        }
+        catch (Exception ex) when (ex is not BadRequestException)
+        {
+            throw new InternalServerException(ex.Message, ex);
+        }
+    }
 
 
     [HttpGet("obtenerGeocercasAsync")]
@@ -183,6 +212,22 @@ public class GeocercaController(IGeocercaService geocercaService) : ControllerBa
             throw new InternalServerException(ex.Message, ex);
         }
     }
+    
+    [HttpPost("crear-geocercas")]
+    public async Task<ActionResult<ApiResponse<GeocercaUpdateResponseDto>>> CreateGeocercaAsync([FromBody] GeocercaCreateDto createDto)
+    {
+        var stopwatch = Stopwatch.StartNew();
+
+        var result = await geocercaService.CreateAsync(createDto);
+
+        stopwatch.Stop();
+
+        var response = ApiResponse<GeocercaUpdateResponseDto>.SuccessResponse(result,
+            "La geocerca fue creada correctamente");
+        response.ResponseTimeMs = stopwatch.ElapsedMilliseconds;
+
+        return Ok(response);
+    }
 
     [HttpPost("crear-con-vendedores")]
     public async Task<ActionResult<ApiResponse<GeocercaConVendedoresCreateResponseDto>>>
@@ -207,5 +252,44 @@ public class GeocercaController(IGeocercaService geocercaService) : ControllerBa
         {
             throw new InternalServerException(ex.Message, ex);
         }
+    }
+    [HttpGet("validar-codigo-geocerca/{codigo}")]
+    public async Task<ActionResult<ApiResponse<bool>>> ValidarCodigoGeocercaAsync([FromRoute] string codigo)
+    {
+        try
+        {
+            var stopwatch = Stopwatch.StartNew();
+            var result = await geocercaService.ExistsAsync(codigo);
+            stopwatch.Stop();
+            
+            if (result)
+            {
+                throw new BadRequestException($"El código de geocerca '{codigo}' ya existe y no se puede usar");
+            }
+            
+            var response = ApiResponse<bool>.SuccessResponse(false, "El código de geocerca está disponible");
+            response.ResponseTimeMs = stopwatch.ElapsedMilliseconds;
+            return Ok(response);
+        }
+        catch (Exception ex) when (ex is not BadRequestException)
+        {
+            throw new InternalServerException(ex.Message, ex);
+        }
+    }
+    
+    [HttpPost("asignar-vendedor/{codigoGeocerca}")]
+    public async Task<ActionResult<ApiResponse<VendorGeofenceAssignmentDto>>> AsignarVendedorAsync(string codigoGeocerca, [FromBody] VendorGeofenceAssignmentDto createDto)
+    {
+        var stopwatch = Stopwatch.StartNew();
+
+        var result = await geocercaService.CreateGeocercaConVendedorAsync(createDto, codigoGeocerca);
+
+        stopwatch.Stop();
+
+        var response = ApiResponse<VendorGeofenceAssignmentDto>.SuccessResponse(result,
+            $"Vendedor {createDto.Geugidv} asignado exitosamente a la geocerca {codigoGeocerca}");
+        response.ResponseTimeMs = stopwatch.ElapsedMilliseconds;
+
+        return Ok(response);
     }
 }

@@ -12,6 +12,19 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
+        // Mapeo de VendorGeofenceAssignmentDto a Geogyu
+        CreateMap<VendorGeofenceAssignmentDto, Geogyu>()
+            .ForMember(dest => dest.Geugid, opt => opt.Ignore()) // Auto-generado
+            .ForMember(dest => dest.Geugfcre, opt => opt.MapFrom(src => DateTime.Now))
+            .ForMember(dest => dest.Geugfedi, opt => opt.MapFrom(src => DateTime.Now))
+            .ForMember(dest => dest.Geugusedi, opt => opt.MapFrom(src => src.Geuguscre))
+            .ForMember(dest => dest.Geugeqedi, opt => opt.MapFrom(src => src.Geugeqcre));
+
+// Mapeo de Geogyu a VendorGeofenceAssignmentDto (para el retorno)
+        CreateMap<Geogyu, VendorGeofenceAssignmentDto>()
+            .ForMember(dest => dest.Geuguscre, opt => opt.MapFrom(src => src.Geuguscre))
+            .ForMember(dest => dest.Geugeqcre, opt => opt.MapFrom(src => src.Geugeqcre));
+        
         // Mapear desde Geogyu + Geogeoc a GeocercaVendedorDto
         CreateMap<Geogyu, GeocercaVendedorDto>()
             .ForMember(dest => dest.Geoccod, opt => opt.MapFrom(src => src.GeugidgNavigation.Geoccod))
@@ -26,6 +39,16 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Geoclon, opt => opt.MapFrom(src => src.GeugidgNavigation.Geoclon))
             .ForMember(dest => dest.Geoccoor, opt => opt.MapFrom(src => src.GeugidgNavigation.Geoccoor))
             .ForMember(dest => dest.FechaAsignacion, opt => opt.MapFrom(src => src.Geugfcre));
+        
+        // Mapear desde GeocercaCreateDto a Geogeoc
+        CreateMap<GeocercaCreateDto, Geogeoc>()
+            .ForMember(dest => dest.Geoccoor, opt => opt.MapFrom(src => ConvertObjectToJson(src.Geoccoor)))
+            .ForMember(dest => dest.Geocfcre, opt => opt.MapFrom(src => DateTime.Now))
+            .ForMember(dest => dest.Geocfedi, opt => opt.MapFrom(src => DateTime.Now))
+            .ForMember(dest => dest.Geocusedi, opt => opt.MapFrom(src => src.Geocuscre))
+            .ForMember(dest => dest.Geoceqedi, opt => opt.MapFrom(src => src.Geoceqcre));
+        
+        
         
         // Para actualización de geocerca
         CreateMap<GeocercaUpdateDto, Geogeoc>()

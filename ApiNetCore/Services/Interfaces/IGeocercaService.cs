@@ -12,7 +12,14 @@ public interface IGeocercaService
     Task<PaginatedResultDto<GeocercaConVendedorDto>> GetAllGeocercaConVendedorAsync(int pageNumber = 1, int pageSize = 10, string? searchTerm = null, string? estado = null, bool? activo = null, bool soloConVendedores = false);
     Task<GeocercaDetailDto> GetByCodigoAsync(string codigo);
     Task<bool> ExistsAsync(string codigo);
+    
+    Task<GeocercaUpdateResponseDto> CreateAsync(GeocercaCreateDto createDto);
+    
     Task<GeocercaConVendedoresCreateResponseDto> CreateGeocercaConVendedoresAsync(GeocercaConVendedoresCreateDto createDto);
+    
+    Task<VendorGeofenceAssignmentDto> CreateGeocercaConVendedorAsync(VendorGeofenceAssignmentDto createDto, string codigoGeocerca);
+    
+    Task<PaginatedResultDto<GeocercaListDto>> GetListGeofenceByEnterpriseAsync(int pageNumber = 1, int pageSize = 10, bool? activo = null, string nameEnterprise = "MEVECSA");
     
     Task<GeocercaUpdateResponseDto> UpdateAsync(string codigo, GeocercaUpdateDto updateDto);
     
@@ -22,7 +29,12 @@ public interface IGeocercaService
     
     Task<GeocercaUpdateResponseDto> ActivarAsync(string codigo);
     
-    public Task<PaginatedResultDto<VendedorConGeocercasDto>> GetVendedoresConGeocercasAsync(string token, int pageNumber = 1, int pageSize = 10, string? searchTerm = null, bool? activo = null, string? estado = null);
+    Task<PaginatedResultDto<VendedorConGeocercasDto>> GetVendedoresConGeocercasAsync(string token, int pageNumber = 1, int pageSize = 10, string? searchTerm = null, bool? activo = null, string? estado = null);
+    
+    
+    
+
+    
 
 
 }

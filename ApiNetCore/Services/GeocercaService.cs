@@ -158,14 +158,54 @@ public class GeocercaService : IGeocercaService
         try
         {
             if (string.IsNullOrEmpty(codigo))
-                return false;
+                throw new BadRequestException("El código de geocerca es requerido");
 
-            return await _dbContextMysql.Geogeocs
-                .AnyAsync(g => g.Geoccod == codigo);
+            var geocerca = await _dbContextMysql.Geogeocs
+                .FirstOrDefaultAsync(g => g.Geoccod == codigo);
+            
+            return geocerca != null; 
+        }
+        catch (BadRequestException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
             throw new InternalServerException($"Error al verificar existencia de geocerca: {ex.Message}");
+        }
+    }
+
+    public async Task<GeocercaUpdateResponseDto> CreateAsync(GeocercaCreateDto createDto)
+    {
+        if(createDto == null)
+            throw new BadRequestException("Los datos de la geocerca son requeridos");
+            
+        var existeGeocerca = await ExistsAsync(createDto.Geoccod);
+        if (existeGeocerca)
+            throw new ConflictException($"Ya existe una geocerca con el código: {createDto.Geoccod}");
+        try
+        {
+            var geocerca = _mapper.Map<Geogeoc>(createDto);
+            _dbContextMysql.Add(geocerca);
+            await _dbContextMysql.SaveChangesAsync();
+
+            var geocercaDetalle = _mapper.Map<GeocercaDetailDto>(geocerca);
+
+            var response = new GeocercaUpdateResponseDto
+            {
+                Geoccod = geocercaDetalle.Geoccod,
+                Geocnom = geocercaDetalle.Geocnom,
+                FechaEdicion = geocercaDetalle.Geocfedi,
+                UsuarioEditor = geocercaDetalle.Geocusedi,
+                Mensaje = $"Geocerca '{geocercaDetalle.Geocnom}' creada exitosamente",
+                DetalleGeocerca = geocercaDetalle
+            };
+
+            return response;
+            
+        }
+        catch (Exception ex) when (ex is not (BadRequestException or NotFoundException or ConflictException))        {
+            throw new InternalServerException($"Error al crear geocerca: {ex.Message}");
         }
     }
 
@@ -240,6 +280,88 @@ public class GeocercaService : IGeocercaService
             await transaction.RollbackAsync();
             throw new InternalServerException($"Error al crear geocerca con vendedores: {ex.Message}");
         }
+    }
+
+    public async Task<VendorGeofenceAssignmentDto> CreateGeocercaConVendedorAsync(VendorGeofenceAssignmentDto createDto, string codigoGeocerca)
+    {
+        if (string.IsNullOrEmpty(codigoGeocerca))
+            throw new BadRequestException("El código de la geocerca es requerido");
+    
+        if (createDto == null)
+            throw new BadRequestException("Los datos de la geocerca son requeridos");
+    
+        var existeGeocerca = await ExistsAsync(codigoGeocerca);
+        if (!existeGeocerca)
+            throw new NotFoundException($"No se encontró una geocerca con el código: {codigoGeocerca}");
+
+        var existeAsignacion = await ExistsVendorGeofenceAssignmentAsync(codigoGeocerca, createDto.Geugidv);
+        if (existeAsignacion)
+            throw new ConflictException($"Ya existe una asignación entre la geocerca {codigoGeocerca} y el vendedor {createDto.Geugidv}");
+
+        try
+        {
+            var assignment = _mapper.Map<Geogyu>(createDto);
+            assignment.Geugidg = codigoGeocerca;
+        
+            _dbContextMysql.Add(assignment);
+            await _dbContextMysql.SaveChangesAsync();
+
+            return _mapper.Map<VendorGeofenceAssignmentDto>(assignment);
+        }
+        catch (Exception ex) when (ex is not (BadRequestException or NotFoundException or ConflictException))
+        {
+            throw new InternalServerException($"Error al crear asignación geocerca-vendedor: {ex.Message}");
+        }
+    }
+
+    public async Task<PaginatedResultDto<GeocercaListDto>> GetListGeofenceByEnterpriseAsync(int pageNumber = 1, int pageSize = 10, bool? activo = null,
+        string nameEnterprise = "MEVECSA")
+    {
+        if (pageNumber <= 0 || pageSize <= 0)
+            throw new BadRequestException("El número de página y el tamaño de página deben ser mayores a 0");
+        if (string.IsNullOrEmpty(nameEnterprise))
+            throw new BadRequestException("El nombre de la empresa es requerido");
+        
+        
+        try
+        {
+            var query = _dbContextMysql.Set<Geogeoc>()
+                .Where(g => g.Geoceqcre.Contains(nameEnterprise));
+            
+            if (activo.HasValue)
+                query = query.Where(g => g.Geocact == activo.Value);
+            
+            var items = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+            
+            var itemsDto = _mapper.Map<List<GeocercaListDto>>(items);
+            
+            var paginacion = new PaginacionDto
+            {
+                PaginaActual = pageNumber,
+                TamanioPagina = pageSize
+            };
+            
+            return new PaginatedResultDto<GeocercaListDto>
+            {
+                Data = itemsDto,
+                Paginacion = paginacion
+            };
+        
+
+        }
+        catch (Exception ex) when (ex is not (BadRequestException or NotFoundException or ConflictException))
+        {
+            throw new InternalServerException($"Error al obtener listado de geocercas: {ex.Message}");
+        }
+    }
+
+    private async Task<bool> ExistsVendorGeofenceAssignmentAsync(string geocod, string vendorId)
+    {
+        return await _dbContextMysql.Set<Geogyu>()
+            .AnyAsync(g => g.Geugidg == geocod && g.Geugidv == vendorId);
     }
 
     public async Task<GeocercaUpdateResponseDto> UpdateAsync(string codigo, GeocercaUpdateDto updateDto)
