@@ -177,8 +177,11 @@ public class GeocercaService : IGeocercaService
 
     public async Task<GeocercaUpdateResponseDto> CreateAsync(GeocercaCreateDto createDto)
     {
-        if(createDto == null)
+        if(createDto == null || string.IsNullOrWhiteSpace(createDto.Geoccod))
             throw new BadRequestException("Los datos de la geocerca son requeridos");
+            
+        if(createDto.Geoccod == "string")
+            throw new BadRequestException("El código de geocerca debe ser un valor válido");
             
         var existeGeocerca = await ExistsAsync(createDto.Geoccod);
         if (existeGeocerca)
