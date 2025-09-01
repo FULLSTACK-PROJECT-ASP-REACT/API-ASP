@@ -323,7 +323,7 @@ public class GeocercaService : IGeocercaService
         if (pageNumber <= 0 || pageSize <= 0)
             throw new BadRequestException("El número de página y el tamaño de página deben ser mayores a 0");
         if (string.IsNullOrEmpty(nameEnterprise))
-            throw new BadRequestException("El nombre de la empresa es requerido");
+            throw new BadRequestException("El nombre de la empresa es requerido.");
         
         
         try
