@@ -10,7 +10,9 @@ public class GeocercaListDto
     public string Geocpais { get; set; } = null!;
     public decimal Geoclat { get; set; }
     public decimal Geoclon { get; set; }
-    public object Geoccoor { get; set; }
+    public object? Geoccoor { get; set; }
+    public string Geocdesc { get; set; } = null!;
+    public string Geocdirre { get; set; } = null!;
     public decimal Geocarm { get; set; }
     public decimal Geocperm { get; set; }
     public string Geocest { get; set; } = null!;
