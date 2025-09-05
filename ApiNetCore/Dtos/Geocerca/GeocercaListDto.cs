@@ -19,4 +19,5 @@ public class GeocercaListDto
     public bool? Geocact { get; set; }
     public int Geocpri { get; set; }
     public DateTime Geocfcre { get; set; }
+    
 }

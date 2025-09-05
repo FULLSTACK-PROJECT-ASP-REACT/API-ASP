@@ -31,6 +31,7 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Geocnom, opt => opt.MapFrom(src => src.GeugidgNavigation.Geocnom))
             .ForMember(dest => dest.Geocsec, opt => opt.MapFrom(src => src.GeugidgNavigation.Geocsec))
             .ForMember(dest => dest.Geocciud, opt => opt.MapFrom(src => src.GeugidgNavigation.Geocciud))
+            .ForMember(dest => dest.Geocdirre, opt => opt.MapFrom(src => src.GeugidgNavigation.Geocdirre))
             .ForMember(dest => dest.Geocprov, opt => opt.MapFrom(src => src.GeugidgNavigation.Geocprov))
             .ForMember(dest => dest.Geocest, opt => opt.MapFrom(src => src.GeugidgNavigation.Geocest))
             .ForMember(dest => dest.Geocact, opt => opt.MapFrom(src => src.GeugidgNavigation.Geocact))

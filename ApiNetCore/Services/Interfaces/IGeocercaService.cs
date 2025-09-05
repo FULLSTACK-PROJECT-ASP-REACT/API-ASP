@@ -9,7 +9,7 @@ namespace ApiNetCore.Services.Interfaces;
 public interface IGeocercaService
 {
     Task<PaginatedResultDto<GeocercaListDto>> GetAllAsync(int pageNumber = 1, int pageSize = 10, string? searchTerm = null, string? estado = null, bool? activo = null);
-    Task<PaginatedResultDto<GeocercaConVendedorDto>> GetAllGeocercaConVendedorAsync(int pageNumber = 1, int pageSize = 10, string? searchTerm = null, string? estado = null, bool? activo = null, bool soloConVendedores = false);
+    Task<PaginatedResultDto<GeocercaConVendedorDto>> GetAllGeocercaConVendedorAsync(int pageNumber = 1, int pageSize = 10, string? searchTerm = null, string? estado = null, bool? activo = null, bool soloConVendedores = false, string nameEnterprise = "MEVECSA");
     Task<GeocercaDetailDto> GetByCodigoAsync(string codigo);
     Task<bool> ExistsAsync(string codigo);
     
@@ -28,6 +28,8 @@ public interface IGeocercaService
     Task<GeocercaUpdateResponseDto> DesactivarAsync(string codigo);
     
     Task<GeocercaUpdateResponseDto> ActivarAsync(string codigo);
+    
+    Task<GeocercaUpdateResponseDto> DesvincularVendedorAsync(string codigo);
     
     Task<PaginatedResultDto<VendedorConGeocercasDto>> GetVendedoresConGeocercasAsync(string token, int pageNumber = 1, int pageSize = 10, string? searchTerm = null, bool? activo = null, string? estado = null);
     

@@ -79,58 +79,63 @@ public class GeocercaService : IGeocercaService
 
     public async Task<PaginatedResultDto<GeocercaConVendedorDto>> GetAllGeocercaConVendedorAsync(int pageNumber = 1,
         int pageSize = 10, string? searchTerm = null,
-        string? estado = null, bool? activo = null, bool soloConVendedores = false)
+        string? estado = null, bool? activo = null, bool soloConVendedores = false, string nameEnterprise = "MEVECSA")
     {
-        try
-        {
+            if (string.IsNullOrEmpty((nameEnterprise)))
+                throw new BadRequestException("El nombre de la empresa es requerido");
             if (pageNumber <= 0 || pageSize <= 0)
                 throw new BadRequestException("El número de página y el tamaño de página deben ser mayores a 0");
+            try
+            {
 
-            var query = _dbContextMysql.Geogeocs.Include(g => g.Geogyus).AsQueryable();
+                var query = _dbContextMysql.Geogeocs.Include(g => g.Geogyus).AsQueryable()
+                    .Where(g => g.Geoceqcre.Contains(nameEnterprise));
+
             
-            // Aplicar filtros
-            if (!string.IsNullOrEmpty(searchTerm))
-                query = query.Where(g =>
-                    g.Geocnom.Contains(searchTerm) ||
-                    g.Geoccod.Contains(searchTerm) ||
-                    g.Geocsec.Contains(searchTerm) ||
-                    g.Geocciud.Contains(searchTerm));
+                // Aplicar filtros
+                if (!string.IsNullOrEmpty(searchTerm))
+                    query = query.Where(g =>
+                        g.Geocnom.Contains(searchTerm) ||
+                        g.Geoccod.Contains(searchTerm) ||
+                        g.Geocsec.Contains(searchTerm) ||
+                        g.Geocciud.Contains(searchTerm));
 
-            if (!string.IsNullOrEmpty(estado)) query = query.Where(g => g.Geocest == estado);
+                if (!string.IsNullOrEmpty(estado)) query = query.Where(g => g.Geocest == estado);
 
-            if (activo.HasValue) query = query.Where(g => g.Geocact == activo.Value);
+                if (activo.HasValue) query = query.Where(g => g.Geocact == activo.Value);
 
-            if (soloConVendedores) query = query.Where(g => g.Geogyus.Count != 0);
+                query = soloConVendedores ? query.Where(g => g.Geogyus.Count > 0) : // CON vendedores
+                    query.Where(g => g.Geogyus.Count == 0); // SIN vendedores
 
-            var totalItems = await query.CountAsync();
+                var totalItems = await query.CountAsync();
 
-            // Aplicar paginación
-            var geocercas = await query
-                .OrderBy(g => g.Geocnom)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+                // Aplicar paginación
+                var geocercas = await query
+                    .OrderBy(g => g.Geocnom)
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
 
-            var geocercasDto = _mapper.Map<List<GeocercaConVendedorDto>>(geocercas);
+                var geocercasDto = _mapper.Map<List<GeocercaConVendedorDto>>(geocercas);
 
-            var paginacion = new PaginacionDto
+                var paginacion = new PaginacionDto
+                {
+                    PaginaActual = pageNumber,
+                    TamanioPagina = pageSize,
+                    TotalRegistros = totalItems,
+                    TotalPaginas = (int)Math.Ceiling((double)totalItems / pageSize)
+                };
+
+                return new PaginatedResultDto<GeocercaConVendedorDto>
+                {
+                    Data = geocercasDto,
+                    Paginacion = paginacion
+                };
+            }
+            catch (Exception ex) when (ex is not BadRequestException)
             {
-                PaginaActual = pageNumber,
-                TamanioPagina = pageSize,
-                TotalRegistros = totalItems,
-                TotalPaginas = (int)Math.Ceiling((double)totalItems / pageSize)
-            };
-
-            return new PaginatedResultDto<GeocercaConVendedorDto>
-            {
-                Data = geocercasDto,
-                Paginacion = paginacion
-            };
-        }
-        catch (Exception ex) when (ex is not BadRequestException)
-        {
-            throw new InternalServerException($"Error al obtener geocercas con vendedores: {ex.Message}");
-        }
+                throw new InternalServerException($"Error al obtener geocercas con vendedores: {ex.Message}");
+            }
     }
 
     public async Task<GeocercaDetailDto> GetByCodigoAsync(string codigo)
@@ -440,6 +445,8 @@ public class GeocercaService : IGeocercaService
             Mensaje = $"Geocerca '{codigo}' eliminada exitosamente"
         };
     }
+    
+    
 
     public async Task<GeocercaUpdateResponseDto> DesactivarAsync(string codigo)
     {
@@ -517,6 +524,40 @@ public class GeocercaService : IGeocercaService
         }    
     }
 
+    public async Task<GeocercaUpdateResponseDto> DesvincularVendedorAsync(string codigo)
+    {
+        if (string.IsNullOrEmpty(codigo))
+            throw new BadRequestException("El código de la geocerca es requerido");
+
+        if (!await ExistsAsync(codigo))
+            throw new NotFoundException($"No se encontró una geocerca con el código: {codigo}");
+        try
+        {
+            var geocercaEntity = await _dbContextMysql.Geogyus
+                .FirstOrDefaultAsync(g => g.Geugidg == codigo);
+            
+            if (geocercaEntity == null)
+                throw new NotFoundException($"No se encontró una geocerca con el código: {codigo}");
+            
+            _dbContextMysql.Remove(geocercaEntity);
+            await _dbContextMysql.SaveChangesAsync();
+            
+            return new GeocercaUpdateResponseDto
+            {
+                Geoccod = geocercaEntity.Geugidv,
+                Geocnom = geocercaEntity.Geugidg,
+                FechaEdicion = geocercaEntity.Geugfedi,
+                UsuarioEditor = geocercaEntity.Geugusedi,
+                Mensaje = $"Geocerca '{geocercaEntity.Geugidv}' desactivada exitosamente"
+            };
+            
+        }
+        catch (Exception ex) when (ex is not (BadRequestException or NotFoundException))
+        {
+            throw new InternalServerException($"Error al desvincular vendedor: {ex.Message}");
+        }
+    }
+
 
     public async Task<PaginatedResultDto<VendedorConGeocercasDto>> GetVendedoresConGeocercasAsync(
         string token, int pageNumber = 1, int pageSize = 10, string? searchTerm = null,
@@ -570,6 +611,7 @@ public class GeocercaService : IGeocercaService
                         Geocnom = g.GeugidgNavigation.Geocnom,
                         Geocsec = g.GeugidgNavigation.Geocsec,
                         Geocciud = g.GeugidgNavigation.Geocciud,
+                        Geocdirre = g.GeugidgNavigation.Geocdirre,
                         Geocprov = g.GeugidgNavigation.Geocprov,
                         Geocest = g.GeugidgNavigation.Geocest,
                         Geocact = g.GeugidgNavigation.Geocact,

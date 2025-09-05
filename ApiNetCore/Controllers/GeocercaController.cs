@@ -120,11 +120,34 @@ public class GeocercaController(IGeocercaService geocercaService) : ControllerBa
             throw new InternalServerException(ex.Message, ex);
         }
     }
+
+    [HttpPatch("desvincular-vendedor/{codigo}")]
+    public async Task<ActionResult<ApiResponse<GeocercaUpdateResponseDto>>> DesvincularVendedorAsync(string codigo)
+    {
+        try
+        {
+            var stopwatch = Stopwatch.StartNew();
+            var result = await geocercaService.DesvincularVendedorAsync(codigo);
+            stopwatch.Stop();
+
+            var response =
+                ApiResponse<GeocercaUpdateResponseDto>.SuccessResponse(result,
+                    "El vendedor fue desvinculado correctamente");
+            response.ResponseTimeMs = stopwatch.ElapsedMilliseconds;
+            return Ok(response);
+        }
+        catch (Exception ex) when (ex is not BadRequestException)
+        {
+            throw new InternalServerException(ex.Message, ex);
+        }
+        
+    }
     
-    [HttpGet("getListGeofenceByEnterprise/{enterpriseName}")]
+    [HttpGet("getListGeofenceByEnterprise")]
     public async Task<ActionResult<ApiResponse<PaginatedResultDto<GeocercaListDto>>>> GetListGeofenceByEnterpriseAsync(
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10,
+        [FromQuery] string enterpriseName = "MEVECSA", 
         [FromQuery] bool? activo = null)
     {
         try
@@ -132,7 +155,7 @@ public class GeocercaController(IGeocercaService geocercaService) : ControllerBa
             var stopwatch = Stopwatch.StartNew();
             if (pageSize > 100) throw new BadRequestException("El tamaño de la página no puede ser mayor a 100");
 
-            var result = await geocercaService.GetListGeofenceByEnterpriseAsync(pageNumber, pageSize, activo);
+            var result = await geocercaService.GetListGeofenceByEnterpriseAsync(pageNumber, pageSize, activo, enterpriseName);
 
             stopwatch.Stop();
 
@@ -188,7 +211,8 @@ public class GeocercaController(IGeocercaService geocercaService) : ControllerBa
             [FromQuery] string? searchTerm = null,
             [FromQuery] string? estado = null,
             [FromQuery] bool? activo = null,
-            [FromQuery] bool soloConVendedores = false)
+            [FromQuery] bool soloConVendedores = false,
+            [FromQuery] string nameEnterprise = "MEVECSA")
     {
         try
         {
@@ -196,7 +220,7 @@ public class GeocercaController(IGeocercaService geocercaService) : ControllerBa
             if (pageSize > 100) throw new BadRequestException("El tamaño de la página no puede ser mayor a 100");
 
             var result = await geocercaService.GetAllGeocercaConVendedorAsync(pageNumber, pageSize, searchTerm, estado,
-                activo, soloConVendedores);
+                activo, soloConVendedores, nameEnterprise);
 
             stopwatch.Stop();
 

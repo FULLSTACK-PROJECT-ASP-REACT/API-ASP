@@ -159,13 +159,17 @@ public partial class Geogeoc
     [Column("geocfedi", TypeName = "datetime")]
     public DateTime Geocfedi { get; set; }
 
+
+    
+    
     /// <summary>
-    /// equipo edita
+    /// 
     /// </summary>
     [Column("geoceqedi", TypeName = "char(50)")]
     [Required]
     [StringLength(50)]
     public string Geoceqedi { get; set; } = null!;
+    
 
     /// <summary>
     /// Relación con geogyu

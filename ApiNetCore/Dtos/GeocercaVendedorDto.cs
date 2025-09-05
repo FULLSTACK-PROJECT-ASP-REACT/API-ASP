@@ -6,6 +6,8 @@ public class GeocercaVendedorDto
     public string Geocnom { get; set; } = string.Empty;
     public string Geocsec { get; set; } = string.Empty;
     public string Geocciud { get; set; } = string.Empty;
+    public string Geocdirre { get; set; } = null!;
+
     public string Geocprov { get; set; } = string.Empty;
     public string Geocest { get; set; } = string.Empty;
     public bool? Geocact { get; set; }
