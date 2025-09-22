@@ -31,6 +31,8 @@ public interface IGeocercaService
     
     Task<GeocercaUpdateResponseDto> DesvincularVendedorAsync(string codigo);
     
+    Task<GeocercaUpdateResponseDto> ConsultarAsync(string codigo);
+    
     Task<PaginatedResultDto<VendedorConGeocercasDto>> GetVendedoresConGeocercasAsync(string token, int pageNumber = 1, int pageSize = 10, string? searchTerm = null, bool? activo = null, string? estado = null);
     
     

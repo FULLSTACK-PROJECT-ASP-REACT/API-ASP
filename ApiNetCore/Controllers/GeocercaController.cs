@@ -121,6 +121,7 @@ public class GeocercaController(IGeocercaService geocercaService) : ControllerBa
         }
     }
 
+    
     [HttpPatch("desvincular-vendedor/{codigo}")]
     public async Task<ActionResult<ApiResponse<GeocercaUpdateResponseDto>>> DesvincularVendedorAsync(string codigo)
     {
@@ -235,6 +236,18 @@ public class GeocercaController(IGeocercaService geocercaService) : ControllerBa
         {
             throw new InternalServerException(ex.Message, ex);
         }
+    }
+
+    [HttpGet("ConsultarRelacion/{codigo}")]
+    public async Task<ActionResult<ApiResponse<GeocercaUpdateResponseDto>>> ConsultarRelacionAsync(string codigo)
+    {
+        var stopwatch = Stopwatch.StartNew();
+        var result = await geocercaService.ConsultarAsync(codigo);
+        stopwatch.Stop();
+        var response = ApiResponse<GeocercaUpdateResponseDto>.SuccessResponse(result,
+            "La consulta se hizo correctamente");
+        response.ResponseTimeMs = stopwatch.ElapsedMilliseconds;
+        return Ok(response);
     }
     
     [HttpPost("crear-geocercas")]

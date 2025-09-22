@@ -558,18 +558,43 @@ public class GeocercaService : IGeocercaService
         }
     }
 
-
-    public async Task<PaginatedResultDto<VendedorConGeocercasDto>> GetVendedoresConGeocercasAsync(
-        string token, int pageNumber = 1, int pageSize = 10, string? searchTerm = null,
-        bool? activo = null, string? estado = null)
+    public async Task<GeocercaUpdateResponseDto> ConsultarAsync(string codigo)
     {
+        if (string.IsNullOrEmpty(codigo))
+            throw new BadRequestException("El código de la geocerca es requerido");
+
         try
         {
-            if (string.IsNullOrEmpty(token))
-                throw new BadRequestException("Token de API externo es requerido");
+            var geocercaEntity = await _dbContextMysql.Geogyus
+                .FirstOrDefaultAsync(g => g.Geugidg == codigo);
+        
+            if (geocercaEntity == null)
+                throw new NotFoundException($"La geocerca {codigo} que mencionas no tiene relacion con ningún vendedor: ");
+        
+            return new GeocercaUpdateResponseDto
+            {
+                Geoccod = geocercaEntity.Geugidg, 
+                Geocnom = geocercaEntity.Geugidv, 
+                FechaEdicion = geocercaEntity.Geugfedi,
+                UsuarioEditor = geocercaEntity.Geugusedi,
+                Mensaje = $"La Geocerca '{geocercaEntity.Geugidg}' tiene relacion con el vendedor '{geocercaEntity.Geugidv}'"
+            };
+        }catch (Exception ex) when (ex is not (BadRequestException or NotFoundException))
+        {
+            throw new InternalServerException($"Error al consultar geocerca: {ex.Message}");
+        }
+    }
 
-            if (pageNumber <= 0 || pageSize <= 0)
-                throw new BadRequestException("El número de página y el tamaño de página deben ser mayores a 0");
+
+    public async Task<PaginatedResultDto<VendedorConGeocercasDto>> GetVendedoresConGeocercasAsync(string token, int pageNumber = 1, int pageSize = 10, string? searchTerm = null, bool? activo = null, string? estado = null)
+    {
+        if (string.IsNullOrEmpty(token))
+            throw new BadRequestException("Token de API externo es requerido");
+
+        if (pageNumber <= 0 || pageSize <= 0)
+            throw new BadRequestException("El número de página y el tamaño de página deben ser mayores a 0");
+        try
+        {
 
             var vendedoresExternos = await _vendedorExternoService.GetVendedoresAsync(token);
 
